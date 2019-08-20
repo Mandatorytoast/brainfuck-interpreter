@@ -15,13 +15,28 @@ func check(e error){
         }
 }
 
+func getBracketPairs(f []byte) map[int]int{
+        opening_indexes := []int{}
+        bracket_map := make(map[int]int)
+        for index, value := range f{
+                if value == 91{
+                     opening_indexes = append(opening_indexes, index)
+                }
+                if value == 93{
+                        if len(opening_indexes) > 0{
+                                bracket_map[opening_indexes[len(opening_indexes)-1]] = index
+                                opening_indexes = opening_indexes[:len(opening_indexes)-1]
+                        }
+                }
+        }
+        return bracket_map
+}
 
 func main() {
         file, err := ioutil.ReadFile("./test")
         check(err)
         p := Pointer{15000}
         nodes := make([]int, 30000)
-        jmp_index := 0
         index := 0
         for index < len(file) {
                 if file[index] == 62 {
@@ -33,15 +48,13 @@ func main() {
                 } else if file[index] == 45{
                         nodes[p.Position] -= 1
                 } else if file[index] == 91{
-                        jmp_index = index
+                        fmt.Println("")
                 } else if file[index] == 46{
                         fmt.Printf("%c", nodes[p.Position])
                 } else if file[index] == 93{
-                        if nodes[p.Position] != 0{
-                                index = jmp_index
-                                continue
-                        }
+                        fmt.Println("")
                 }
                 index += 1
         }
+        fmt.Println(getBracketPairs(file))
 }
