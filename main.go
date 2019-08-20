@@ -24,7 +24,7 @@ func getBracketPairs(f []byte) map[int]int{
                 }
                 if value == 93{
                         if len(opening_indexes) > 0{
-                                bracket_map[opening_indexes[len(opening_indexes)-1]] = index
+                                bracket_map[index] = opening_indexes[len(opening_indexes)-1]
                                 opening_indexes = opening_indexes[:len(opening_indexes)-1]
                         }
                 }
@@ -38,6 +38,7 @@ func main() {
         p := Pointer{15000}
         nodes := make([]int, 30000)
         index := 0
+        bracketMap := getBracketPairs(file)
         for index < len(file) {
                 if file[index] == 62 {
                         p.Position += 1
@@ -48,13 +49,15 @@ func main() {
                 } else if file[index] == 45{
                         nodes[p.Position] -= 1
                 } else if file[index] == 91{
-                        fmt.Println("")
+                        fmt.Printf("")
                 } else if file[index] == 46{
                         fmt.Printf("%c", nodes[p.Position])
                 } else if file[index] == 93{
-                        fmt.Println("")
+                        if nodes[p.Position] != 0 {
+                                index = bracketMap[index]
+                        }
                 }
+                //fmt.Println(p.Position)
                 index += 1
         }
-        fmt.Println(getBracketPairs(file))
 }
