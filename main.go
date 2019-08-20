@@ -9,32 +9,6 @@ type Pointer struct{
         Position    int
 }
 
-func getArraySize(file []byte) (int, int){ //returns the needed size of the array
-        var highest int                    //also returns the initial starting position of the pointer
-        var lowest int
-        var current int
-        var starting_pos int
-        for _, value := range file {
-                if value == 62 {
-                        current += 1
-                        if current > highest{
-                                highest = current
-                        }
-                } else if value == 60{
-                        current -= 1
-                        if current < lowest{
-                                starting_pos += 1
-                                lowest = current
-                        }
-                }
-        }
-        //fmt.Println(highest)
-        //fmt.Println(lowest)
-        //fmt.Println(highest - lowest)
-        //fmt.Println(starting_pos)
-        return highest - lowest + 1, starting_pos
-}
-
 func check(e error){
         if e != nil{
                 panic(e)
@@ -44,10 +18,10 @@ func check(e error){
 func main() {
         file, err := ioutil.ReadFile("./test")
         check(err)
-        array_size, starting_position := getArraySize(file)
-        p := Pointer{starting_position}
-        nodes := make([]int, array_size)
-        for _, value := range file {
+        p := Pointer{}
+        nodes := make([]int, 30000)
+        jmp_index := 0
+        for index, value := range file {
                 if value == 62 {
                         p.Position += 1
                 } else if value == 60{
@@ -56,7 +30,15 @@ func main() {
                         nodes[p.Position] += 1
                 } else if value == 45{
                         nodes[p.Position] -= 1
+                } else if value == 91{
+                        jmp_index =  index
+                        fmt.Printf("Jmp_index: %d\n", jmp_index)
+                } else if value == 93{
+                        fmt.Printf("node value %d\n", nodes[p.Position])
+                        if nodes[p.Position] != 0{
+                                p.Position = jmp_index
+                                fmt.Printf("Looped back")
+                        }
                 }
         }
-        fmt.Println(nodes)
 }
